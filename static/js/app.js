@@ -27,9 +27,15 @@
  *      - an array of otu_labels
  */
 
+function unpack(rows, index) {
+    return rows.map(function(row) {
+      return row[index];
+    });
+}
+
 //  Defining init function to hold a tentative "template" of graph/visual displays
 function init() {
-    d3.json("../data/samples.json").then((importedData) => {
+    d3.json("data/samples.json").then((importedData) => {
         
         var data = importedData;
         var sampleData = data.samples
@@ -71,7 +77,7 @@ d3.selectAll("#selDataset").on("change", updatePlotly);
 
 function updatePlotly() {
 
-    d3.json("../samples.json").then((importedData) => {
+    d3.json("data/samples.json").then((importedData) => {
 
 // Defining + flattening dropdownmenu ID, flattening data calls
         var data = importedData;
@@ -159,7 +165,7 @@ function updatePlotly() {
         console.log(metaLocation);
         console.log(metaBBType);
         console.log(metaWfreq);
-
+        console.log(sampOtuIdTen)
 // Populating demographic panel with subject information
         var p1 = document.getElementById("sample-id")
         p1.textContent = `id: ${metaID}`;
@@ -183,6 +189,9 @@ function updatePlotly() {
         p7.textContent = `wfreq: ${metaWfreq}`;
 
 // Creating chart traces
+        // var colorScale = d3.scale.ordinal().domain(["000","1000","2000",""])
+        //         .range(["#FF0000", "#00FF00", "#0000FF"]);
+
         var traceBar = {
             type: "bar",
             x: sampValTen[0],
@@ -203,12 +212,22 @@ function updatePlotly() {
             y: sampleValues[0],
             mode: "markers",
             marker: {
-                // color: `"#${sampleOtuIDs[0]}"`,
-                color: ['#1f77bf', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#17becf',
-                        '#1f77bf', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#17becf',
-                        '#1f77bf', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#17becf',
-                        '#1f77bf', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#17becf',
-                ],
+                // color: colorScale,
+                // rules: [{
+                //     alpha: 0.8,
+                //     backgroundColor: '#ff8a80',
+                //     rule: "y >= 2500"
+                //   },
+                //   {
+                //     alpha: 0.8,
+                //     backgroundColor: '#82b1ff',
+                //     rule: "y > 1250 && y < 2500"
+                //   },
+                //   {
+                //     alpha: 0.8,
+                //     backgroundColor: '#b388ff',
+                //     rule: "y < 1250"
+                //   }],
                 size: sampleValues[0],
                 sizeref: 0.1,
                 sizemode: "area"
@@ -220,7 +239,7 @@ function updatePlotly() {
 // Defining chart datasets
         var dataBar = [traceBar];
         var dataBubble = [traceBubble];
-
+        
 // Defining chart layouts/styles
         var layoutBar = {
             title: `Top 10 OTUs found for ${dataset}`,
@@ -228,16 +247,14 @@ function updatePlotly() {
                 title: "Values",
                 autorange: true
             },
-    // Couldn't figure out how to rename the ticks labels for some reason.
+    // Couldn't figure out how to rename the tick labels.
             yaxis: { 
-                autotick: true,
-                tick0: 0,
-                dtick: 2,
-                // tickvals: [""],
-                showtickprefix: "all",
-                tickprefix: "OTU ",
-                // showticksuffix: "all",
-                // ticksuffix: sampOtuIdTen
+                autotick: false,
+                // showticklabels: true,
+                // showtickprefix: "all",
+                // tickprefix: sampOtuIdTen.map(String)
+                // tickprefix: `${sampOtuIdTen.map(String)}`
+                // tickprefix: sampOtuIdTen.keys()
             }
         };
 
